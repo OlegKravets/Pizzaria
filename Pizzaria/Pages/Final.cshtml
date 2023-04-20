@@ -1,0 +1,36 @@
+﻿@page
+@model Pizzaria.Pages.FinalModel
+@{
+}
+
+<h3>Orders</h3>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Pizza name</th>
+            <th>Total Price</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var order in @Model.Orders)
+        {
+            <tr>
+                <th>@order.Pizza.Name</th>
+                <th>@order.TotalPrice</th>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <h1>Grand total: $@Model.Orders.Sum(o => o.TotalPrice)</h1>
+</div>
+
+<form method="post">
+    <div class="form-group">
+        <input type="submit" class="btn btn-primary" value="Order" />
+    </div>
+</form>

@@ -1,0 +1,47 @@
+﻿@page
+@model Pizzaria.Pages.CreateOrderModel
+
+@{
+    ViewData["Title"] = "CreateOrder";
+}
+
+<h4>Order</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+           <div class="form-group col-3 mb-5">
+                @{
+                    string imagePath = "~/Images/Pizzas/" + (@Model.SelectedPizza.Name + ".jpg");
+                    <img src="@imagePath" class="w-100" asp-append-version="true" />
+                }
+                <input type="hidden" asp-for="SelectedPizza.Id" />
+                <h1 style="text-align:left;">@Model.SelectedPizza.Name</h1>
+                <br />
+                <label>Base Price:</label>
+                <h1 style="text-align:left;">@Model.SelectedPizza.BasePrice</h1>
+            </div>
+
+            <div class="form-group">
+                <input type="checkbox" asp-for="CurrentOrder.IsDoubleCheese" placeholder="Double Cheese" />Double Cheese
+                <br />
+                <input type="checkbox" asp-for="CurrentOrder.IsTomato" placeholder="Tomato" />Tomato
+                <br />
+                <input type="checkbox" asp-for="CurrentOrder.IsBeef" placeholder="Beef" />Beef
+                <br />
+            </div>
+
+            <div class="form-group">
+                <input type="submit" class="btn btn-primary" value="Add" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

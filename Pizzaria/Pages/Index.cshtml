@@ -1,0 +1,28 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to my Pizzaria !!</h1>
+    <p>What you want to order?</p>
+
+    <div class="row">
+        @foreach (var pizza in @Model.PizzaList)
+        {
+            string imagePath = "~/Images/Pizzas/" + (@pizza.Name + ".jpg");
+            <div class="col-3 mb-5">
+                <h1 style="text-align:left;">@pizza.Name</h1>
+                <p style="text-align:left;">~$@pizza.BasePrice</p>
+                <a class="pizza-img mt-1" style="float:left"
+                   asp-page="CreateOrder"
+                   asp-route-PizzaId="@pizza.Id">
+                   <img src="@imagePath" class="w-100" asp-append-version="true" />
+                </a>
+                <br />
+            </div>
+        }
+    </div>
+    <a class="btn btn-primary mt-1" asp-area="" asp-page="Final">Finish my order</a>
+</div>
