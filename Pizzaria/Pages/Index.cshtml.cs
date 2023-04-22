@@ -9,6 +9,8 @@ namespace Pizzaria.Pages
         private readonly ApplicationDbContext _dbContext;
         private Customer _customer;
 
+        public bool HasOrders { get; private set; }
+
         public List<Pizza> PizzaList = new List<Pizza>();
 
         public IndexModel(ApplicationDbContext dbContext)
@@ -22,6 +24,8 @@ namespace Pizzaria.Pages
         {
             PizzaList = _dbContext.Pizzas.ToList();
             HttpContext.Session.SetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}", Customer.Id);
+
+            HasOrders = _dbContext.PizzaOrders.Any(o => o.CurrentCustomerId == _customer.Id);
         }
     }
 }

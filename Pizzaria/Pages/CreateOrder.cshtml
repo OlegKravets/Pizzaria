@@ -8,34 +8,38 @@
 <h4>Order</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-           <div class="form-group col-3 mb-5">
+    <form method="post">
+        <h1 style="text-align:left;">@Model.SelectedPizza.Name</h1>
+        <div class="d-flex flex-row">
+            <div>
                 @{
                     string imagePath = "~/Images/Pizzas/" + (@Model.SelectedPizza.Name + ".jpg");
-                    <img src="@imagePath" class="w-100" asp-append-version="true" />
+                    <img src="@imagePath" class="col-6" asp-append-version="true" />
                 }
+            </div>
+            <div class="d-flex flex-column">
+                <div class="p-2">
+                    <h5 style="text-align:left;">Base price: $@Model.SelectedPizza.BasePrice</h5>
+                </div>
+
+                <div class="form-group pb-4">
+                    <input type="checkbox" asp-for="CurrentOrder.IsDoubleCheese" placeholder="Double Cheese" />Double Cheese (+$@Models.Order.DoubleCheesePrice)
+                    <br />
+                    <input type="checkbox" asp-for="CurrentOrder.IsTomato" placeholder="Tomato" />Tomato (+$@Models.Order.TomatoPrice)
+                    <br />
+                    <input type="checkbox" asp-for="CurrentOrder.IsBeef" placeholder="Beef" />Beef (+$@Models.Order.BeefPrice)
+                    <br />
+                </div>
+            </div>
+            <div class="p-2">
                 <input type="hidden" asp-for="SelectedPizza.Id" />
-                <h1 style="text-align:left;">@Model.SelectedPizza.Name</h1>
-                <br />
-                <label>Base Price:</label>
-                <h1 style="text-align:left;">@Model.SelectedPizza.BasePrice</h1>
             </div>
+        </div>
 
-            <div class="form-group">
-                <input type="checkbox" asp-for="CurrentOrder.IsDoubleCheese" placeholder="Double Cheese" />Double Cheese
-                <br />
-                <input type="checkbox" asp-for="CurrentOrder.IsTomato" placeholder="Tomato" />Tomato
-                <br />
-                <input type="checkbox" asp-for="CurrentOrder.IsBeef" placeholder="Beef" />Beef
-                <br />
-            </div>
-
-            <div class="form-group">
-                <input type="submit" class="btn btn-primary" value="Add" />
-            </div>
-        </form>
-    </div>
+        <div class="form-group pb-4">
+            <input type="submit" class="btn btn-primary" value="Add" />
+        </div>
+    </form>
 </div>
 
 <div>
@@ -43,5 +47,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
 }

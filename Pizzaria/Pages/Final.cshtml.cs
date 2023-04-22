@@ -16,7 +16,23 @@ namespace Pizzaria.Pages
             _context = context;
         }
 
+        [BindProperty]
         public List<Order> Orders { get; set; } = new List<Order>();
+
+        public async Task<IActionResult> OnPostDeleteAsync(int? id)
+        {
+            if (id.HasValue)
+            {
+                var order = _context.PizzaOrders.FirstOrDefault(o => o.Id == id.Value);
+                if (order is not null)
+                {
+                    _context.PizzaOrders.Remove(order);
+                    await _context.SaveChangesAsync();
+                }
+            }
+
+            return RedirectToPage("Final");
+        }
 
         public void OnGet()
         {

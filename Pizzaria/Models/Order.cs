@@ -2,6 +2,10 @@
 {
     public class Order
     {
+        public const int DoubleCheesePrice = 2;
+        public const int BeefPrice = 5;
+        public const int TomatoPrice = 1;
+
         public int Id { get; set; }
 
         public int CurrentCustomerId { get; set; }
@@ -28,17 +32,17 @@
                 float total = Pizza.BasePrice;
                 if (IsDoubleCheese)
                 {
-                    total += 2;
+                    total += DoubleCheesePrice;
                 }
 
                 if (IsTomato)
                 {
-                    total += 1;
+                    total += TomatoPrice;
                 }
 
                 if (IsBeef)
                 {
-                    total += 5;
+                    total += BeefPrice;
                 }
 
                 return total;
