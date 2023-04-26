@@ -19,7 +19,8 @@ namespace Pizzaria.Data
             modelBuilder.Entity<Pizza>().HasData(new Pizza() { Id = 3, Name = "Margarita", BasePrice = 6 });
             modelBuilder.Entity<Pizza>().HasData(new Pizza() { Id = 4, Name = "King", BasePrice = 10 });
 
-            modelBuilder.Entity<Customer>().HasData(new Customer() { Name = "Oleh", Id = 1});
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer() { Name = "Oleh", Id = 1, UserName = "oleh", Password="password"});
         }
 
         public DbSet<Order> PizzaOrders { get; set; }

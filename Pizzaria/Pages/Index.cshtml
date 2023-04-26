@@ -5,7 +5,20 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome to my Pizzaria !!</h1>
+    <div class="d-flex justify-content-end mb-3">
+        @if (@Model.Customer == null)
+        {
+            <a class="btn btn-outline-dark" asp-page="Login">Login</a>
+        }
+        else
+        {
+            <form asp-page-handler="Logout" method="post">
+                <button type="submit" class="btn btn-outline-dark">Logout</button>
+            </form>
+        }
+    </div>
+
+    <h1 class="display-4">Welcome <b>@Model.Customer?.Name </b>to my Pizzaria !!</h1>
     <p>What you want to order?</p>
 
     <div class="row">
@@ -16,9 +29,9 @@
                 <h1 style="text-align:left;">@pizza.Name</h1>
                 <p style="text-align:left;">~$@pizza.BasePrice</p>
                 <a class="pizza-img mt-1" style="float:left"
-                   asp-page="CreateOrder"
-                   asp-route-PizzaId="@pizza.Id">
-                   <img src="@imagePath" class="w-100" asp-append-version="true" />
+               asp-page="CreateOrder"
+               asp-route-PizzaId="@pizza.Id">
+                    <img src="@imagePath" class="w-100" asp-append-version="true" />
                 </a>
                 <br />
             </div>
