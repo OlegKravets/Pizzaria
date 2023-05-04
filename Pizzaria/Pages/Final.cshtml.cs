@@ -1,19 +1,18 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Pizzaria.Models;
-using Pizzaria.Data;
 using Microsoft.EntityFrameworkCore;
+using Pizzaria.Models;
+using Pizzaria.Repositories;
 
 namespace Pizzaria.Pages
 {
     [BindProperties(SupportsGet = true)]
-    public class FinalModel : PageModel
+    public class FinalModel : PageModelBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Order> _orderRepository;
 
-        public FinalModel(ApplicationDbContext context)
+        public FinalModel(IRepository<Order> orderRepository)
         {
-            _context = context;
+            _orderRepository = orderRepository;
         }
 
         [BindProperty]
@@ -23,24 +22,24 @@ namespace Pizzaria.Pages
         {
             if (id.HasValue)
             {
-                var order = _context.PizzaOrders.FirstOrDefault(o => o.Id == id.Value);
+                var order = _orderRepository.FirstOrDefault(o => o.Id == id.Value);
                 if (order is not null)
                 {
-                    _context.PizzaOrders.Remove(order);
-                    await _context.SaveChangesAsync();
+                    _orderRepository.RemoveEntity(order);
+                    await _orderRepository.SaveChanges();
                 }
             }
 
-            return RedirectToPage("Final");
+            return RedirectToPage(PageNames.Final);
         }
 
         public void OnGet()
         {
-            int? customerId = HttpContext.Session.GetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}");
+            int? customerId = GetUserId();
 
             if (customerId.HasValue)
             {
-                Orders = _context.PizzaOrders
+                Orders = _orderRepository
                     .Where(o => o.CurrentCustomerId == customerId)
                     .Include(o => o.Pizza)
                     .ToList();
@@ -49,15 +48,15 @@ namespace Pizzaria.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            int? customerId = HttpContext.Session.GetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}");
+            int? customerId = GetUserId();
 
             if (customerId.HasValue)
             {
-                _context.PizzaOrders.RemoveRange(_context.PizzaOrders.Where(o => o.CurrentCustomerId == customerId));
-                await _context.SaveChangesAsync();
+                _orderRepository.RemoveRange(_orderRepository.Where(o => o.CurrentCustomerId == customerId));
+                await _orderRepository.SaveChanges();
             }
 
-            return RedirectToPage("ThankYou");
+            return RedirectToPage(PageNames.ThankYou);
         }
     }
 }

@@ -1,17 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Pizzaria.Data;
 using Pizzaria.Models;
+using Pizzaria.Repositories;
 
 namespace Pizzaria.Pages
 {
-    public class CreateOrderModel : PageModel
+    public class CreateOrderModel : PageModelBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Pizza> _pizzaRepository;
+        private readonly IRepository<Order> _orderRepository;
 
-        public CreateOrderModel(ApplicationDbContext context)
+        public CreateOrderModel(IRepository<Pizza> pizzaRepository, IRepository<Order> orderRepository)
         {
-            _context = context;
+            _pizzaRepository = pizzaRepository;
+            _orderRepository = orderRepository;
         }
 
         [BindProperty]
@@ -27,7 +28,7 @@ namespace Pizzaria.Pages
                 return NotFound();
             }
 
-            SelectedPizza = _context.Pizzas.FirstOrDefault(p => p.Id == pizzaId);
+            SelectedPizza = _pizzaRepository.FirstOrDefault(p => p.Id == pizzaId);
 
             if (SelectedPizza is null)
             {
@@ -39,9 +40,8 @@ namespace Pizzaria.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            int? customerId = HttpContext.Session.GetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}");
-
-            if (_context.PizzaOrders is null || SelectedPizza is null || !customerId.HasValue)
+            int? customerId = GetUserId();
+            if (_orderRepository.IsEmpty && SelectedPizza is null)
             {
                 return Page();
             }
@@ -49,11 +49,11 @@ namespace Pizzaria.Pages
             CurrentOrder.CurrentCustomerId = customerId.Value;
             CurrentOrder.PizzaId = SelectedPizza.Id;
 
-            _context.PizzaOrders.Add(CurrentOrder);
+            _orderRepository.AddEntity(CurrentOrder);
 
-            await _context.SaveChangesAsync();
+            await _orderRepository.SaveChanges();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage(PageNames.Index);
         }
     }
 }

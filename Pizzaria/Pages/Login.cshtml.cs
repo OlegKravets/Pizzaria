@@ -1,23 +1,27 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Pizzaria.Data;
 using Pizzaria.Models;
+using Pizzaria.Repositories;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pizzaria.Pages
 {
-    public class LoginModel : PageModel
+    public class LoginModel : PageModelBase
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IRepository<Customer> _customerRepository;
 
-        public LoginModel(ApplicationDbContext dbContext)
+        public LoginModel(IRepository<Customer> customerRepository)
         {
-            _dbContext = dbContext;
+            _customerRepository = customerRepository;
         }
 
         [BindProperty]
+        [Required]
         public string UserName { get; set; }
 
         [BindProperty]
+        [Required]
+        [StringLength(20, MinimumLength = 6, ErrorMessage = "Pasword must be  between  6 and 20 characters")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         public void OnGet()
@@ -27,16 +31,16 @@ namespace Pizzaria.Pages
         public IActionResult OnPostLogin()
         {
             return ValidUser()
-                ? RedirectToPage("Index")
+                ? RedirectToPage(PageNames.Index)
                 : Page();
         }
 
         private bool ValidUser()
         {
-            var user = _dbContext.Customers.FirstOrDefault(c => c.UserName == UserName);
+            var user = _customerRepository.FirstOrDefault(c => c.UserName == UserName);
             if (user is not null && user.Password.Equals(Password, StringComparison.InvariantCulture))
             {
-                HttpContext.Session.SetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}", user?.Id ?? -1);
+                SetUserId(user?.Id ?? -1);
                 return true;
             }
 

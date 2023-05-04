@@ -1,47 +1,52 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Pizzaria.Data;
 using Pizzaria.Models;
+using Pizzaria.Repositories;
 
 namespace Pizzaria.Pages
 {
-    public class IndexModel : PageModel
+    public class IndexModel : PageModelBase
     {
-        private readonly ApplicationDbContext _dbContext;
-
         public bool HasOrders { get; private set; }
 
         public List<Pizza> PizzaList = new List<Pizza>();
+        private readonly IRepository<Pizza> _pizzaRepository;
+        private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<Customer> _customerRepository;
 
-        public IndexModel(ApplicationDbContext dbContext)
+        public IndexModel(
+            IRepository<Pizza> pizzaRepository,
+            IRepository<Order> orderRepository,
+            IRepository<Customer> customerRepository)
         {
-            _dbContext = dbContext;
+            _pizzaRepository = pizzaRepository;
+            _orderRepository = orderRepository;
+            _customerRepository = customerRepository;
         }
 
         public Customer Customer { get; set; }
 
         public void OnGet()
         {
-            PizzaList = _dbContext.Pizzas.ToList();
+            PizzaList = _pizzaRepository.GetAllEntities().ToList();
             GetCurrentUser();
 
-            HasOrders = Customer is not null && _dbContext.PizzaOrders.Any(o => o.CurrentCustomerId == Customer.Id);
+            HasOrders = Customer is not null && _orderRepository.Any(o => o.CurrentCustomerId == Customer.Id);
         }
 
         public IActionResult OnPostLogout()
         {
-            HttpContext.Session.Remove($"{nameof(Customer)}.{nameof(Customer.Id)}");
+            RemoveUserId();
             Customer = null;
 
-            return RedirectToPage("Index");
+            return RedirectToPage(PageNames.Index);
         }
 
         private void GetCurrentUser()
         {
-            int? userId = HttpContext.Session.GetInt32($"{nameof(Customer)}.{nameof(Customer.Id)}");
+            int? userId = GetUserId();
             if (userId.HasValue)
             {
-                Customer = _dbContext.Customers.FirstOrDefault(c => c.Id == userId.Value);
+                Customer = _customerRepository.FirstOrDefault(c => c.Id == userId.Value);
             }
         }
     }

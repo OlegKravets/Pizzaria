@@ -37,7 +37,14 @@
         </div>
 
         <div class="form-group pb-4">
-            <input type="submit" class="btn btn-primary" value="Add" />
+            @if (@Model.HasLogin)
+            {
+                <input type="submit" class="btn btn-primary" value="Add" />
+            }
+            else
+            {
+                <div class="alert alert-danger" role="alert">Please Login and try again!</div>
+            }
         </div>
     </form>
 </div>

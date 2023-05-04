@@ -1,5 +1,7 @@
 using Pizzaria.Data;
 using Microsoft.EntityFrameworkCore;
+using Pizzaria.Repositories;
+using Pizzaria.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddSession();
+
+// DI for repositories
+RegisterRepositories(builder);
 
 var app = builder.Build();
 
@@ -35,3 +40,10 @@ app.MapRazorPages();
 app.UseSession();
 
 app.Run();
+
+static void RegisterRepositories(WebApplicationBuilder builder)
+{
+    builder.Services.AddScoped<IRepository<Pizza>, PizzaRepository>();
+    builder.Services.AddScoped<IRepository<Order>, OrderRepository>();
+    builder.Services.AddScoped<IRepository<Customer>, CustomerRepository>();
+}
